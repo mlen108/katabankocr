@@ -1,4 +1,4 @@
-file = File.open('./user_case_1_data.txt', 'r')
+file = File.open('./data_entries.txt', 'r')
 data = file.read
 file.close
 
