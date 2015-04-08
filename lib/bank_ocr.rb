@@ -81,9 +81,36 @@ class AccountEntry
     (0..24).step(3) do |idx|
       digit = entry[0][idx, 3] << entry[1][idx, 3] << entry[2][idx, 3]
       # find digit representation within our hash map.
-      output << VALUES[digit] || digit
+      output << VALUES[digit]
     end
 
     output.join
+  end
+end
+
+class AccountNumber
+  attr_reader :account_number
+
+  def initialize(account_number)
+    if account_number.is_a?(Integer)
+      account_number = account_number.to_s
+    end
+
+    @account_number = account_number
+    @sum = 0
+  end
+
+  def checksum
+    (0..account_number.length).reduce(0) do |idx|
+      @sum += account_number[idx * -1].to_i * idx
+    end
+  end
+
+  def valid?
+    checksum % 11 == 0
+  end
+
+  def invalid?
+    !valid?
   end
 end

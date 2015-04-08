@@ -52,7 +52,7 @@ end
 
 describe AccountEntry do
   describe '.parse' do
-    context 'when the account number is empty' do
+    context 'when the account entry is empty' do
       subject do
         empty_entry =
         ["\n"] +
@@ -66,7 +66,7 @@ describe AccountEntry do
       it { expect(subject).to be nil }
     end
 
-    context 'when the account number is valid' do
+    context 'when the account entry is valid' do
       subject do
         invalid_entry =
         ["    _  _     _     _  _    \n"] +
@@ -78,6 +78,34 @@ describe AccountEntry do
       end
 
       it { expect(subject).to eql('123401234') }
+    end
+  end
+end
+
+describe AccountNumber do
+  # TODO: test the initialize for string/int types
+
+  describe '.checksum' do
+    context 'when the account number has valid checksum' do
+      subject { AccountNumber.new(000000000) }
+
+      it { expect(subject.checksum).to eq(0) }
+    end
+  end
+
+  describe '.valid?' do
+    context 'when the account number is valid' do
+      subject { AccountNumber.new(457508000) }
+
+      it { expect(subject.valid?).to be true }
+    end
+  end
+
+  describe '.invalid?' do
+    context 'when the account number is invalid' do
+      subject { AccountNumber.new(664371495) }
+
+      it { expect(subject.invalid?).to be false }
     end
   end
 end
