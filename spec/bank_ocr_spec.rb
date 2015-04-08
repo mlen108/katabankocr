@@ -49,3 +49,35 @@ describe BankOCR do
     end
   end
 end
+
+describe AccountEntry do
+  describe '.parse' do
+    context 'when the account number is empty' do
+      subject do
+        empty_entry =
+        ["\n"] +
+        ["\n"] +
+        ["\n"] +
+        ["\n"]
+
+        AccountEntry.new.parse(empty_entry)
+      end
+
+      it { expect(subject).to be nil }
+    end
+
+    context 'when the account number is valid' do
+      subject do
+        invalid_entry =
+        ["    _  _     _     _  _    \n"] +
+        ["  | _| _||_|| |  | _| _||_|\n"] +
+        ["  ||_  _|  ||_|  ||_  _|  |\n"] +
+        ["\n"]
+
+        AccountEntry.new.parse(invalid_entry)
+      end
+
+      it { expect(subject).to eql('123401234') }
+    end
+  end
+end

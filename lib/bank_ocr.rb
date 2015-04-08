@@ -73,13 +73,15 @@ end
 
 class AccountEntry
   def parse(entry)
+    return unless entry.inject(:+).size == 85
+
     output = []
     # each line has 27 chars & each digit is represented as 3 chars long
     # so iterate these numbers and substring at correct step(s).
     (0..24).step(3) do |idx|
       digit = entry[0][idx, 3] << entry[1][idx, 3] << entry[2][idx, 3]
       # find digit representation within our hash map.
-      output << VALUES[digit]
+      output << VALUES[digit] || digit
     end
 
     output.join
