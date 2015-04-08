@@ -33,15 +33,15 @@ describe BankOCR do
     context 'should parse the entries from string' do
       subject do
         new_data =
-        " _  _  _  _  _  _  _  _  _ \n" +
-        "| || || || || || || || || |\n" +
-        "|_||_||_||_||_||_||_||_||_|\n" +
+        " _  _  _  _  _  _  _  _    \n" +
+        "| || || || || || || || |  |\n" +
+        "|_||_||_||_||_||_||_||_|  |\n" +
         "\n"
 
         BankOCR.new.parse(new_data)
       end
 
-      it { expect(subject[0]).to eql('000000000') }
+      it { expect(subject[0]).to eql('000000001') }
     end
 
     context 'should parse the entries from file' do

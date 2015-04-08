@@ -58,14 +58,13 @@ class BankOCR
   end
 
   def parse(data = nil)
-    if data.nil?
-      data = self.read
-    end
+    data ||= self.read
 
     accounts = []
+    klass = AccountEntry.new
     # split data every 4 lines as each entry is represented in 4 lines blocks.
     data.lines.each_slice(4) do |entry|
-      accounts << AccountEntry.new.parse(entry)
+      accounts << klass.parse(entry)
     end
 
     accounts
