@@ -81,10 +81,12 @@ class AccountEntry
     (0..24).step(3) do |idx|
       digit = entry[0][idx, 3] << entry[1][idx, 3] << entry[2][idx, 3]
       # find digit representation within our hash map.
-      output << VALUES[digit]
+      if VALUES.include?(digit)
+        output << VALUES[digit]
+      else
+        output << '?'
+      end
     end
-
-    return unless output.join.length == 9
 
     output.join
   end
@@ -126,6 +128,6 @@ class AccountNumber
   end
 
   def illegible?
-    account_number.include? '?'
+    account_number.include?('?')
   end
 end
