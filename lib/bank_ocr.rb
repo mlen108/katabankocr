@@ -97,12 +97,11 @@ class AccountNumber
     end
 
     @account_number = account_number
-    @sum = 0
   end
 
   def checksum
-    (0..account_number.length).reduce(0) do |idx|
-      @sum += account_number[idx * -1].to_i * idx
+    (0..account_number.length).reduce(0) do |sum, idx|
+      sum += account_number[idx * -1].to_i * idx
     end
   end
 

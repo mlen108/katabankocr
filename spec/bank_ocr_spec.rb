@@ -105,7 +105,7 @@ describe AccountNumber do
     context 'when the account number is invalid' do
       subject { AccountNumber.new(664371495) }
 
-      it { expect(subject.invalid?).to be false }
+      it { expect(subject.invalid?).to be true }
     end
   end
 end
