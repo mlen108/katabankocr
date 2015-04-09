@@ -1,4 +1,4 @@
-VALUES = {
+DIGITS = {
   " _ " +
   "| |" +
   "|_|" => 0,
@@ -81,8 +81,8 @@ class AccountEntry
     (0..24).step(3) do |idx|
       digit = entry[0][idx, 3] << entry[1][idx, 3] << entry[2][idx, 3]
       # find digit representation within our hash map.
-      if VALUES.include?(digit)
-        output << VALUES[digit]
+      if DIGITS.include?(digit)
+        output << DIGITS[digit]
       else
         output << '?'
       end

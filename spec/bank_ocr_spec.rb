@@ -156,7 +156,7 @@ describe AccountNumber do
 
   describe '.valid?' do
     context 'when the account number is valid' do
-      subject { AccountNumber.new(457508000) }
+      subject { AccountNumber.new(711111111) }
 
       it { expect(subject.valid?).to be true }
     end
