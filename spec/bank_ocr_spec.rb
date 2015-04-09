@@ -41,11 +41,11 @@ describe BankOCR do
         BankOCR.new.parse(new_data)
       end
 
-      it { expect(subject[0]).to eql('000000001') }
+      it { expect(subject[0]).to eq('000000001') }
     end
 
     context 'should parse the entries from file' do
-      it { expect(subject.parse[1]).to eql('111111111') }
+      it { expect(subject.parse[1]).to eq('111111111') }
     end
   end
 end
@@ -77,7 +77,7 @@ describe AccountEntry do
         AccountEntry.new.parse(invalid_entry)
       end
 
-      it { expect(subject).to eql('123401234') }
+      it { expect(subject).to eq('123401234') }
     end
   end
 end
