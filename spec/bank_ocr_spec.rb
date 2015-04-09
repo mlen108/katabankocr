@@ -83,7 +83,19 @@ describe AccountEntry do
 end
 
 describe AccountNumber do
-  # TODO: test the initialize for string/int types
+  describe '.initialize' do
+    context 'when the account number is of integer type' do
+      subject { AccountNumber.new(123456789) }
+
+      it { expect(subject.account_number).to be_instance_of(String) }
+    end
+
+    context 'when the account number is of string type' do
+      subject { AccountNumber.new('123456789') }
+
+      it { expect(subject.account_number).to be_instance_of(String) }
+    end
+  end
 
   describe '.checksum' do
     context 'when the account number has valid checksum' do
