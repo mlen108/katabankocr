@@ -41,11 +41,26 @@ describe BankOCR do
         BankOCR.new.parse(new_data)
       end
 
-      it { expect(subject[0]).to eq('000000001') }
+      it { expect(subject).to match_array(['000000001']) }
     end
 
-    context 'should parse the entries from file' do
-      it { expect(subject.parse[1]).to eq('111111111') }
+    context 'when parses the entries from file' do
+      it 'should contain exact items' do
+        items = [
+          '000000000',
+          '111111111',
+          '123456789',
+          '222222222',
+          '333333333',
+          '444444444',
+          '555555555',
+          '666666666',
+          '777777777',
+          '888888888',
+          '999999999'
+        ]
+        expect(subject.parse).to match_array(items)
+      end
     end
   end
 end
