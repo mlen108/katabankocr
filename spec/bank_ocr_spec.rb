@@ -83,16 +83,30 @@ describe AccountEntry do
 
     context 'when the account entry is valid' do
       subject do
-        invalid_entry =
+        valid_entry =
         ["    _  _     _     _  _    \n"] +
         ["  | _| _||_|| |  | _| _||_|\n"] +
         ["  ||_  _|  ||_|  ||_  _|  |\n"] +
         ["\n"]
 
-        AccountEntry.new.parse(invalid_entry)
+        AccountEntry.new.parse(valid_entry)
       end
 
       it { expect(subject).to eq('123401234') }
+    end
+
+    context 'when the account entry is invalid' do
+      subject do
+        invalid_entry =
+        ["    _  _     _     _  _  # \n"] +
+        ["  | _| _||_|| |  | _| _||#|\n"] +
+        ["  ||_  _|  ||_|  ||_  _| #|\n"] +
+        ["\n"]
+
+        AccountEntry.new.parse(invalid_entry)
+      end
+
+      it { expect(subject).to be nil }
     end
   end
 end

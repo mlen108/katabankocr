@@ -84,6 +84,8 @@ class AccountEntry
       output << VALUES[digit]
     end
 
+    return unless output.join.length == 9
+
     output.join
   end
 end
