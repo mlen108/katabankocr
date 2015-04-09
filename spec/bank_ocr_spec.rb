@@ -97,6 +97,26 @@ describe AccountNumber do
     end
   end
 
+  describe '.to_s' do
+    context 'when the account number is legible' do
+      subject { AccountNumber.new(123456789) }
+
+      it { expect(subject.to_s).to eq('123456789') }
+    end
+
+    context 'when the account number has wrong checksum' do
+      subject { AccountNumber.new(664371495) }
+
+      it { expect(subject.to_s).to eq('664371495 ERR') }
+    end
+
+    context 'when the account number is illegible' do
+      subject { AccountNumber.new('86110??36') }
+
+      it { expect(subject.to_s).to eq('86110??36 ILL') }
+    end
+  end
+
   describe '.checksum' do
     context 'when the account number has valid checksum' do
       subject { AccountNumber.new(000000000) }
@@ -118,6 +138,14 @@ describe AccountNumber do
       subject { AccountNumber.new(664371495) }
 
       it { expect(subject.invalid?).to be true }
+    end
+  end
+
+  describe '.illegible?' do
+    context 'when the number is illegible' do
+      subject { AccountNumber.new('12345678?') }
+
+      it { expect(subject.illegible?).to be true }
     end
   end
 end

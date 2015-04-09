@@ -99,6 +99,16 @@ class AccountNumber
     @account_number = account_number
   end
 
+  def to_s
+    if illegible?
+      "#{account_number} ILL"
+    elsif invalid?
+      "#{account_number} ERR"
+    else
+      "#{account_number}"
+    end
+  end
+
   def checksum
     (0..account_number.length).reduce(0) do |sum, idx|
       sum += account_number[idx * -1].to_i * idx
@@ -111,5 +121,9 @@ class AccountNumber
 
   def invalid?
     !valid?
+  end
+
+  def illegible?
+    account_number.include? '?'
   end
 end
