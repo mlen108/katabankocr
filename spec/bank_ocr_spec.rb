@@ -38,12 +38,10 @@ module OCR
         ["\n"] +
         ["\n"] +
         ["\n"]
-
-        described_class.new(empty_entry)
       end
 
-      it 'will be nil' do
-        expect(subject.account_number).to be nil
+      it 'will raise an error' do
+        expect { described_class.new(empty_entry) }.to raise_error
       end
     end
 
@@ -60,10 +58,6 @@ module OCR
 
       it 'will be equal to correct number' do
         expect(subject.to_s).to eq('000000000')
-      end
-
-      it 'will have some checksum value' do
-        expect(subject.checksum).to eq(0)
       end
 
       it 'will have valid checksum' do
@@ -107,10 +101,6 @@ module OCR
         expect(subject.to_s).to include('?')
       end
 
-      it 'will have some checksum value' do
-        expect(subject.checksum).to eq(93)
-      end
-
       it 'will have not valid checksum' do
         expect(subject.valid?).to be false
       end
@@ -125,7 +115,7 @@ module OCR
     context 'when parsing use case 1' do
       subject { Reader.new('data/use_case_1.ocr') }
 
-      it 'will have correct numbers' do
+      it 'will contain these matches' do
         numbers = [
           '000000000',
           '111111111 ERR',
@@ -146,13 +136,35 @@ module OCR
     context 'when parsing use case 3' do
       subject { Reader.new('data/use_case_3.ocr') }
 
-      it 'will have correct numbers' do
+      it 'will contain these matches' do
         numbers = [
           '000000051',
           '1234?678? ILL',
           '49006771? ILL'
         ]
         expect(subject.parse).to match_array(numbers)
+      end
+    end
+
+    context 'when parsing use case 4' do
+      subject { Reader.new('data/use_case_4.ocr') }
+
+      it 'will contain these matches' do
+        numbers = [
+          "711111111",
+          "777777177",
+          "200800000",
+          "333393333",
+          "888888888 AMB ['888886888', '888888880', '888888988']",
+          "555555555 AMB ['555655555', '559555555']",
+          "666666666 AMB ['666566666', '686666666']",
+          "999999999 AMB ['899999999', '993999999', '999959999']",
+          "490067715 AMB ['490067115', '490067719', '490867715']",
+          "123456789",
+          "000000051",
+          "490867715"
+        ]
+        expect(subject.parse_alternatives).to match_array(numbers)
       end
     end
   end
