@@ -114,6 +114,10 @@ module OCR
       Number.new(@account_number).valid?
     end
 
+    def invalid?
+      Number.new(@account_number).invalid?
+    end
+
     def illegible?
       Number.new(@account_number).illegible?
     end

@@ -27,21 +27,21 @@ module OCR
       it 'will contain data' do
         expect(subject.data).to include(' _  _  _  _  _  _  _  _  _ ')
       end
+
+      it 'will return numbers for parsed entries' do
+        expect(subject.parse.at(0)).to eq('000000000')
+      end
+
+      it 'will return alternative numbers for parsed entries' do
+        expect(subject.parse_alternatives.at(0)).to eq('000000000')
+      end
     end
   end
 
   describe Entry do
-    context 'when the entry is empty' do
-      subject do
-        empty_entry =
-        ["\n"] +
-        ["\n"] +
-        ["\n"] +
-        ["\n"]
-      end
-
+    context 'when the entry has invalid length' do
       it 'will raise an error' do
-        expect { described_class.new(empty_entry) }.to raise_error
+        expect { described_class.new(["#"]) }.to raise_error
       end
     end
 
@@ -81,7 +81,7 @@ module OCR
       end
 
       it 'will not be valid' do
-        expect(subject.valid?).to be false
+        expect(subject.invalid?).to be true
       end
     end
 
@@ -107,6 +107,41 @@ module OCR
 
       it 'will contain illegible character' do
         expect(subject.illegible?).to be true
+      end
+    end
+  end
+
+  describe EntryAlternative do
+    context 'when the entry is valid' do
+      subject do
+        valid_entry =
+        [" _  _  _  _  _  _  _  _  _ \n"] +
+        ["| || || || || || || || || |\n"] +
+        ["|_||_||_||_||_||_||_||_||_|\n"] +
+        ["\n"]
+
+        described_class.new(valid_entry)
+      end
+
+      it 'will be equal to correct number' do
+        expect(subject.to_s).to eq('000000000')
+      end
+    end
+
+    context 'when the entry contains illegal character' do
+      subject do
+        illegal_entry =
+        [" _  _     _     _  _  #    \n"] +
+        [" _| _||_|| |  | _| _||#|  |\n"] +
+        ["|_  _|  ||_|  ||_  _| #|  |\n"] +
+        ["\n"]
+
+        described_class.new(illegal_entry)
+      end
+
+      it 'will replace illegal characters' do
+        expect(subject.to_s).to eq('2340123?1 ILL')
+        expect(subject.to_s).to include('?')
       end
     end
   end
