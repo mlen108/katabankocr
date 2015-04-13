@@ -26,23 +26,6 @@ module OCR
       it 'will contain data' do
         expect(subject.data).to include(' _  _  _  _  _  _  _  _  _ ')
       end
-
-      it 'will have correct numbers' do
-        numbers = [
-          '000000000',
-          '111111111 ERR',
-          '123456789',
-          '222222222 ERR',
-          '333333333 ERR',
-          '444444444 ERR',
-          '555555555 ERR',
-          '666666666 ERR',
-          '777777777 ERR',
-          '888888888 ERR',
-          '999999999 ERR'
-        ]
-        expect(subject.parse).to match_array(numbers)
-      end
     end
   end
 
@@ -133,6 +116,42 @@ module OCR
 
       it 'will contain illegible character' do
         expect(subject.illegible?).to be true
+      end
+    end
+  end
+
+  describe Reader do
+    context 'when parsing use case 1' do
+      subject { Reader.new('data/use_case_1.ocr') }
+
+      it 'will have correct numbers' do
+        numbers = [
+          '000000000',
+          '111111111 ERR',
+          '123456789',
+          '222222222 ERR',
+          '333333333 ERR',
+          '444444444 ERR',
+          '555555555 ERR',
+          '666666666 ERR',
+          '777777777 ERR',
+          '888888888 ERR',
+          '999999999 ERR'
+        ]
+        expect(subject.parse).to match_array(numbers)
+      end
+    end
+
+    context 'when parsing use case 3' do
+      subject { Reader.new('data/use_case_3.ocr') }
+
+      it 'will have correct numbers' do
+        numbers = [
+          '000000051',
+          '1234?678? ILL',
+          '49006771? ILL'
+        ]
+        expect(subject.parse).to match_array(numbers)
       end
     end
   end
