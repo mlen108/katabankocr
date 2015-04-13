@@ -1,3 +1,4 @@
+require 'spec_helper'
 require 'bank_ocr'
 
 module OCR
