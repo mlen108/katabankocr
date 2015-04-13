@@ -30,16 +30,16 @@ module OCR
       it 'will have correct numbers' do
         numbers = [
           '000000000',
-          '111111111',
+          '111111111 ERR',
           '123456789',
-          '222222222',
-          '333333333',
-          '444444444',
-          '555555555',
-          '666666666',
-          '777777777',
-          '888888888',
-          '999999999'
+          '222222222 ERR',
+          '333333333 ERR',
+          '444444444 ERR',
+          '555555555 ERR',
+          '666666666 ERR',
+          '777777777 ERR',
+          '888888888 ERR',
+          '999999999 ERR'
         ]
         expect(subject.parse).to match_array(numbers)
       end
@@ -47,115 +47,92 @@ module OCR
   end
 
   describe Entry do
-    describe '.parse' do
-      context 'when the account entry is empty' do
-        subject do
-          empty_entry =
-          ["\n"] +
-          ["\n"] +
-          ["\n"] +
-          ["\n"]
+    context 'when the entry is empty' do
+      subject do
+        empty_entry =
+        ["\n"] +
+        ["\n"] +
+        ["\n"] +
+        ["\n"]
 
-          described_class.new.parse(empty_entry)
-        end
-
-        it { expect(subject).to be nil }
+        described_class.new(empty_entry)
       end
 
-      context 'when the account entry is valid' do
-        subject do
-          valid_entry =
-          ["    _  _     _     _  _    \n"] +
-          ["  | _| _||_|| |  | _| _||_|\n"] +
-          ["  ||_  _|  ||_|  ||_  _|  |\n"] +
-          ["\n"]
-
-          described_class.new.parse(valid_entry)
-        end
-
-        it { expect(subject).to eq('123401234') }
-      end
-
-      context 'when the account entry is invalid' do
-        subject do
-          invalid_entry =
-          [" _  _     _     _  _  #    \n"] +
-          [" _| _||_|| |  | _| _||#|  |\n"] +
-          ["|_  _|  ||_|  ||_  _| #|  |\n"] +
-          ["\n"]
-
-          described_class.new.parse(invalid_entry)
-        end
-
-        it { expect(subject).to eq('2340123?1') }
-      end
-    end
-  end
-
-  describe Digit do
-    describe '.initialize' do
-      context 'when the account number is of integer type' do
-        subject { described_class.new(123456789) }
-
-        it { expect(subject.account_number).to be_instance_of(String) }
-      end
-
-      context 'when the account number is of string type' do
-        subject { described_class.new('123456789') }
-
-        it { expect(subject.account_number).to be_instance_of(String) }
+      it 'will be nil' do
+        expect(subject.account_number).to be nil
       end
     end
 
-    describe '.to_s' do
-      context 'when the account number is legible' do
-        subject { described_class.new(123456789) }
+    context 'when the entry is valid' do
+      subject do
+        valid_entry =
+        [" _  _  _  _  _  _  _  _  _ \n"] +
+        ["| || || || || || || || || |\n"] +
+        ["|_||_||_||_||_||_||_||_||_|\n"] +
+        ["\n"]
 
-        it { expect(subject.to_s).to eq('123456789') }
+        described_class.new(valid_entry)
       end
 
-      context 'when the account number has wrong checksum' do
-        subject { described_class.new(664371495) }
-
-        it { expect(subject.to_s).to eq('664371495 ERR') }
+      it 'will be equal to correct number' do
+        expect(subject.to_s).to eq('000000000')
       end
 
-      context 'when the account number is illegible' do
-        subject { described_class.new('86110??36') }
-
-        it { expect(subject.to_s).to eq('86110??36 ILL') }
+      it 'will have some checksum value' do
+        expect(subject.checksum).to eq(0)
       end
-    end
 
-    describe '.checksum' do
-      context 'when the account number has valid checksum' do
-        subject { described_class.new(000000000) }
-
-        it { expect(subject.checksum).to eq(0) }
+      it 'will have valid checksum' do
+        expect(subject.valid?).to be true
       end
-    end
 
-    describe '.valid?' do
-      context 'when the account number is valid' do
-        subject { described_class.new(711111111) }
-
-        it { expect(subject.valid?).to be true }
+      it 'will contain legible characters only' do
+        expect(subject.illegible?).to be false
       end
     end
 
-    describe '.invalid?' do
-      context 'when the account number is invalid' do
-        subject { described_class.new(664371495) }
+    context 'when the entry has wrong checksum' do
+      subject do
+        bad_checksum =
+        [" _  _     _     _  _       \n"] +
+        [" _| _||_|| |  | _| _||_|  |\n"] +
+        ["|_  _|  ||_|  ||_  _|  |  |\n"] +
+        ["\n"]
 
-        it { expect(subject.invalid?).to be true }
+        described_class.new(bad_checksum)
+      end
+
+      it 'will not be valid' do
+        expect(subject.valid?).to be false
       end
     end
 
-    describe '.illegible?' do
-      context 'when the number is illegible' do
-        subject { described_class.new('12345678?') }
+    context 'when the entry contains illegal character' do
+      subject do
+        illegal_entry =
+        [" _  _     _     _  _  #    \n"] +
+        [" _| _||_|| |  | _| _||#|  |\n"] +
+        ["|_  _|  ||_|  ||_  _| #|  |\n"] +
+        ["\n"]
 
-        it { expect(subject.illegible?).to be true }
+        described_class.new(illegal_entry)
+      end
+
+      it 'will replace illegal characters' do
+        expect(subject.to_s).to eq('2340123?1 ILL')
+        expect(subject.to_s).to include('?')
+      end
+
+      it 'will have some checksum value' do
+        expect(subject.checksum).to eq(93)
+      end
+
+      it 'will have not valid checksum' do
+        expect(subject.valid?).to be false
+      end
+
+      it 'will contain illegible character' do
+        expect(subject.illegible?).to be true
       end
     end
   end

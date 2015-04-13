@@ -57,7 +57,7 @@ module OCR
 
       # split data every 4 lines as each entry is represented in 4 lines blocks.
       data.lines.each_slice(4) do |entry|
-        entries << Entry.new.parse(entry).to_s
+        entries << Entry.new(entry).to_s
       end
 
       entries
@@ -65,17 +65,26 @@ module OCR
   end
 
   class Entry
-    attr_reader :digits
+    attr_reader :entry
+    attr_reader :account_number
 
-    def initialize
-      @digits = nil
+    def initialize(entry)
+      @entry = entry
+      @account_number = nil
+      parse
     end
 
     def to_s
-      @digits
+      if illegible?
+        "#{account_number} ILL"
+      elsif invalid?
+        "#{account_number} ERR"
+      else
+        "#{account_number}"
+      end
     end
 
-    def parse(entry)
+    def parse
       return unless entry.inject(:+).size == 85
 
       output = []
@@ -91,34 +100,12 @@ module OCR
         end
       end
 
-      @digits = output.join
-    end
-  end
-
-  class Digit
-    attr_reader :account_number
-
-    def initialize(account_number)
-      if account_number.is_a?(Integer)
-        account_number = account_number.to_s
-      end
-
-      @account_number = account_number
-    end
-
-    def to_s
-      if illegible?
-        "#{account_number} ILL"
-      elsif invalid?
-        "#{account_number} ERR"
-      else
-        "#{account_number}"
-      end
+      @account_number = output.join
     end
 
     def checksum
-      (0..account_number.length).reduce(0) do |sum, idx|
-        sum += account_number[idx * -1].to_i * idx
+      (0..@account_number.length).reduce(0) do |sum, idx|
+        sum += @account_number[idx * -1].to_i * idx
       end
     end
 
@@ -127,11 +114,14 @@ module OCR
     end
 
     def invalid?
-      !valid?
+      ! valid?
     end
 
     def illegible?
-      account_number.include?('?')
+      @account_number.include?('?')
     end
+  end
+
+  class Digit
   end
 end
