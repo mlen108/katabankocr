@@ -66,8 +66,6 @@ module OCR
 
   class Entry
     attr_reader :entry
-    attr_reader :account_number
-    attr_reader :sth
 
     def initialize(entry)
       @entry = entry
