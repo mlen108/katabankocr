@@ -2,66 +2,46 @@ require 'bank_ocr'
 
 module OCR
   describe Reader do
-    describe '.exists?' do
-      context 'when the file exists' do
-        it { expect(subject.exists?).to be true }
-      end
-
-      context 'when the file does not exist' do
-        subject { described_class.new('non_existing_file.txt') }
-
-        it { expect(subject.exists?).to be false }
+    context 'when the file does not exist' do
+      it 'will raise an error' do
+        expect{ described_class.new('not_existing_file') }.to raise_error
       end
     end
 
-    describe '.read' do
-      context 'when the file is not empty' do
-        it { expect(subject.read).not_to be_empty}
+    context 'when the file exists' do
+      subject { Reader.new('data/use_case_1.ocr') }
+
+      it 'will not raise an error' do
+        expect{ described_class.new('data/use_case_1.ocr') }.not_to raise_error
       end
 
-      context 'when the file does not exist' do
-        subject { described_class.new('missing_file.txt') }
-
-        it { expect(subject.read).to be nil}
+      it 'will be instance of a correct class' do
+        expect(subject).to be_instance_of(described_class)
       end
 
-      context 'when the file has right content' do
-        it { expect(subject.read).to include ' _  _  _  _  _  _  _  _  _ ' }
-      end
-    end
-
-    describe '.parse' do
-      context 'should parse the entries from string' do
-        subject do
-          new_data =
-          " _  _  _  _  _  _  _  _    \n" +
-          "| || || || || || || || |  |\n" +
-          "|_||_||_||_||_||_||_||_|  |\n" +
-          "\n"
-
-          described_class.new.parse(new_data)
-        end
-
-        it { expect(subject).to match_array(['000000001']) }
+      it 'will be not empty' do
+        expect(subject.data).not_to be_empty
       end
 
-      context 'when parses the entries from file' do
-        it 'should contain exact items' do
-          items = [
-            '000000000',
-            '111111111',
-            '123456789',
-            '222222222',
-            '333333333',
-            '444444444',
-            '555555555',
-            '666666666',
-            '777777777',
-            '888888888',
-            '999999999'
-          ]
-          expect(subject.parse).to match_array(items)
-        end
+      it 'will contain data' do
+        expect(subject.data).to include(' _  _  _  _  _  _  _  _  _ ')
+      end
+
+      it 'will have correct numbers' do
+        numbers = [
+          '000000000',
+          '111111111',
+          '123456789',
+          '222222222',
+          '333333333',
+          '444444444',
+          '555555555',
+          '666666666',
+          '777777777',
+          '888888888',
+          '999999999'
+        ]
+        expect(subject.parse).to match_array(numbers)
       end
     end
   end

@@ -42,37 +42,39 @@ DIGITS = {
 
 module OCR
   class Reader
-    attr_reader :path
+    attr_reader :data
 
-    def initialize(path = 'data_entries.txt')
-      @path = File.absolute_path(path)
-    end
-
-    def exists?
-      File.exists?(path)
-    end
-
-    def read
-      return unless exists?
-
-      File.read(path)
-    end
-
-    def parse(data = nil)
-      data ||= self.read
-
-      accounts = []
-      klass = Entry.new
-      # split data every 4 lines as each entry is represented in 4 lines blocks.
-      data.lines.each_slice(4) do |entry|
-        accounts << klass.parse(entry)
+    def initialize(file_path)
+      unless File.exists?(file_path)
+        fail "File '#{file_path}' not found."
       end
 
-      accounts
+      @data = File.read(file_path)
+    end
+
+    def parse
+      entries = []
+
+      # split data every 4 lines as each entry is represented in 4 lines blocks.
+      data.lines.each_slice(4) do |entry|
+        entries << Entry.new.parse(entry).to_s
+      end
+
+      entries
     end
   end
 
   class Entry
+    attr_reader :digits
+
+    def initialize
+      @digits = nil
+    end
+
+    def to_s
+      @digits
+    end
+
     def parse(entry)
       return unless entry.inject(:+).size == 85
 
@@ -89,7 +91,7 @@ module OCR
         end
       end
 
-      output.join
+      @digits = output.join
     end
   end
 
