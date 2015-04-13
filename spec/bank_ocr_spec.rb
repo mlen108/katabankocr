@@ -33,7 +33,7 @@ module OCR
       end
 
       it 'will return alternative numbers for parsed entries' do
-        expect(subject.parse_alternatives.at(0)).to eq('000000000')
+        expect(subject.parse_alternatives.at(5)).to eq("555555555 AMB ['555655555', '559555555']")
       end
     end
   end
@@ -41,7 +41,7 @@ module OCR
   describe Entry do
     context 'when the entry has invalid length' do
       it 'will raise an error' do
-        expect { described_class.new(["#"]) }.to raise_error
+        expect{ described_class.new(["#"]) }.to raise_error
       end
     end
 
