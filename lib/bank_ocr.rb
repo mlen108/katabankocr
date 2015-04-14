@@ -1,43 +1,43 @@
 DIGITS = {
-  " _ " +
-  "| |" +
-  "|_|" => 0,
+  ' _ ' \
+  '| |' \
+  '|_|' => 0,
 
-  "   " +
-  "  |" +
-  "  |" => 1,
+  '   ' \
+  '  |' \
+  '  |' => 1,
 
-  " _ " +
-  " _|" +
-  "|_ " => 2,
+  ' _ ' \
+  ' _|' \
+  '|_ ' => 2,
 
-  " _ " +
-  " _|" +
-  " _|" => 3,
+  ' _ ' \
+  ' _|' \
+  ' _|' => 3,
 
-  "   " +
-  "|_|" +
-  "  |" => 4,
+  '   ' \
+  '|_|' \
+  '  |' => 4,
 
-  " _ " +
-  "|_ " +
-  " _|" => 5,
+  ' _ ' \
+  '|_ ' \
+  ' _|' => 5,
 
-  " _ " +
-  "|_ " +
-  "|_|" => 6,
+  ' _ ' \
+  '|_ ' \
+  '|_|' => 6,
 
-  " _ " +
-  "  |" +
-  "  |" => 7,
+  ' _ ' \
+  '  |' \
+  '  |' => 7,
 
-  " _ " +
-  "|_|" +
-  "|_|" => 8,
+  ' _ ' \
+  '|_|' \
+  '|_|' => 8,
 
-  " _ " +
-  "|_|" +
-  " _|" => 9
+  ' _ ' \
+  '|_|' \
+  ' _|' => 9
 }
 
 FROM_DIGITS = DIGITS.invert
@@ -47,9 +47,7 @@ module OCR
     attr_reader :data
 
     def initialize(file_path)
-      unless File.exists?(file_path)
-        fail "File '#{file_path}' not found."
-      end
+      fail "File '#{file_path}' not found." unless File.exist?(file_path)
 
       @data = File.read(file_path)
     end
@@ -91,9 +89,7 @@ module OCR
     end
 
     def check
-      unless entry.inject(:+).size == 85
-        fail "Entry has wrong length."
-      end
+      fail 'Entry has wrong length.' unless entry.inject(:+).size == 85
     end
 
     def parse
@@ -131,7 +127,7 @@ module OCR
 
       # find all possible combinations by comparing each character
       # within given entry with each character stored in hash map
-      while !dup_entry.empty?
+      until dup_entry.empty?
         ch = dup_entry.shift
         Digit.new.guess(ch).each do |guess|
           digits = recognize(prefix) + guess.to_s + recognize(dup_entry)
@@ -159,13 +155,17 @@ module OCR
         if choices.size == 1
           "#{choices.first}"
         elsif choices.size > 1
-          "#{account_number} AMB [" + choices.map { |c| "'#{c}'" }.join(', ') + "]"
+          "#{account_number} AMB #{ambs(choices)}"
         elsif illegible?
           "#{account_number} ILL"
         else
           "#{account_number} ERR"
         end
       end
+    end
+
+    def ambs(choices)
+      '[' + choices.map { |c| "'#{c}'" }.join(', ') + ']'
     end
   end
 
@@ -178,16 +178,16 @@ module OCR
 
     def checksum
       (0..account_number.length).reduce(0) do |sum, idx|
-        sum += account_number[idx * -1].to_i * idx
+        sum + account_number[idx * -1].to_i * idx
       end
     end
 
     def valid?
-      ! illegible? && account_number.length == 9 && checksum % 11 == 0
+      !illegible? && account_number.length == 9 && checksum % 11 == 0
     end
 
     def invalid?
-      ! valid?
+      !valid?
     end
 
     def illegible?
@@ -198,12 +198,10 @@ module OCR
   class Digit
     def guess(character)
       FROM_DIGITS.map do |_, digit_repr|
-        # count all the differences between original character & each matched one
-        matches = character.chars.zip(digit_repr.chars).map { |a, b| a == b }.count(false)
+        # count all differences between original character & each matched one
         # only entries with one character changed are allowed
-        if matches == 1
-          DIGITS[digit_repr]
-        end
+        matches = character.chars.zip(digit_repr.chars).map { |a, b| a == b }
+        DIGITS[digit_repr] if matches.count(false) == 1
       end
     end
 
