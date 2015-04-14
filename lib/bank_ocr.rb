@@ -148,19 +148,13 @@ module OCR
   class EntryAlternative < Entry
     # extend the parent' method to keep UserCase1 happy
     def to_s
-      if valid?
-        "#{account_number}"
+      choices = valid_alternatives
+      if choices.size == 1
+        "#{choices.first}"
+      elsif choices.size > 1
+        "#{account_number} AMB #{ambs(choices)}"
       else
-        choices = valid_alternatives
-        if choices.size == 1
-          "#{choices.first}"
-        elsif choices.size > 1
-          "#{account_number} AMB #{ambs(choices)}"
-        elsif illegible?
-          "#{account_number} ILL"
-        else
-          "#{account_number} ERR"
-        end
+        super
       end
     end
 
